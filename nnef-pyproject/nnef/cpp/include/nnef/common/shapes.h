@@ -669,7 +669,7 @@ namespace nnef
         
         if ( autoAxis != std::numeric_limits<size_t>::max() )
         {
-            check(inputVolume % outputVolume == 0, "automatic output shape (%s) incompatible with input shape (%s)", (int)outputVolume, (int)inputVolume);
+            check(inputVolume % outputVolume == 0, "automatic output shape (%d) incompatible with input shape (%d)", (int)outputVolume, (int)inputVolume);
             
             output[autoAxis] = (Shape::value_type)(inputVolume / outputVolume);
         }

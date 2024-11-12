@@ -3,6 +3,8 @@ __pycache__
 .idea
 /_models
 /out
+build
 /*/build
 /*/dist
 *.egg-info
+.vscode

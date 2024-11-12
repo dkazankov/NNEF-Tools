@@ -65,21 +65,21 @@ namespace nnef
         
         static std::string formatString( const char* fmt, ... )
         {
-            va_list args;
+            std::va_list args;
             
             va_start(args, fmt);
-            auto length = vsnprintf(nullptr, 0, fmt, args);
+            auto length = std::vsnprintf(nullptr, 0, fmt, args);
             va_end(args);
             
             if ( length < 0 )
             {
-                throw std::logic_error("string formatting error");
+                return std::string("string formatting error");
             }
             
-            std::string str(length, '\0');
+            std::string str(length + 1, '\0');
             
             va_start(args, fmt);
-            vsnprintf((char*)str.data(), length + 1, fmt, args);
+            std::vsnprintf((char*)str.data(), length + 1, fmt, args);
             va_end(args);
             
             return str;
