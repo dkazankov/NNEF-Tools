@@ -82,7 +82,8 @@ class TestEnv(unittest.TestCase):
     def _exec_model(model_path):
         np.random.seed(0)
 
-        interpreter = tf.lite.Interpreter(model_path=model_path)
+        interpreter = tf.lite.Interpreter(model_path=model_path,
+                                          experimental_op_resolver_type=tf.lite.experimental.OpResolverType.BUILTIN_WITHOUT_DEFAULT_DELEGATES)
         interpreter.allocate_tensors()
 
         for input in interpreter.get_input_details():
@@ -102,7 +103,7 @@ class TestEnv(unittest.TestCase):
 
     @staticmethod
     def _random_data(dtype, shape):
-        if dtype == bool:
+        if dtype == bool or dtype == np.bool_:
             return np.random.random(shape) > 0.5
         elif np.issubdtype(dtype, np.integer):
             return np.maximum(np.floor(np.random.random(shape) * 256).astype(dtype), 255)

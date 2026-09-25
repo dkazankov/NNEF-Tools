@@ -137,7 +137,12 @@ class Converter(_Converter):
         else:
             assert False
 
-        return self._pre_transpose(tensor, perm)
+        original = self._tensor_map[tensor]
+        if self._is_constant(original) and len(original.consumers) == 1:
+            self._transform_constant(tensor, lambda data: np.transpose(data, axes=perm))
+            return tensor
+        else:
+            return self._pre_transpose(tensor, perm)
 
     def transpose_depthwise_filter(self, tensor, format='XCN'):
         if self.is_xcn(format):
@@ -150,7 +155,13 @@ class Converter(_Converter):
             assert False
 
         shape = tensor.shape[:-2] + (1, -1)
-        return self._pre_transpose(self._reshape(tensor, shape), perm)
+
+        original = self._tensor_map[tensor]
+        if self._is_constant(original) and len(original.consumers) == 1:
+            self._transform_constant(tensor, lambda data: np.transpose(np.reshape(data, shape=shape), axes=perm))
+            return tensor
+        else:
+            return self._pre_transpose(self._reshape(tensor, shape), perm)
 
     def transpose_like(self, tensor, ref):
         if ref is not None and self.transposing(ref):
@@ -331,6 +342,7 @@ _Transforms = Converter.unpack_transforms({
                 'size': '!nxc_to_ncx(ksize) if is_nxc(data_format) else ksize',
                 'stride': '!nxc_to_ncx(strides) if is_nxc(data_format) else strides',
                 'padding': '!convert_padding(padding, I[0].rank, explicit_paddings, data_format)',
+                'border': '!"ignore"',
             }
         ),
     'Concat':
