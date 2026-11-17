@@ -13,6 +13,7 @@
 # limitations under the License.
 
 cmake_minimum_required(VERSION 3.10)
+#set(CMAKE_VERBOSE_MAKEFILE ON)
 
 project(nnef CXX)
 
@@ -45,6 +46,9 @@ add_library(${PROJECT_NAME}
         src/nnef.cpp
         src/cnnef.cpp
         )
+add_executable(infer2 infer2.cpp)
+add_executable(nnef_tff_info nnef_tff_info.cpp)
+add_executable(nnef2ada nnef2ada.cpp)
 
 # build interface include dir is used when this cmake is included into
 # a larger project
@@ -59,10 +63,24 @@ set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX _d)
 
 target_link_libraries(${PROJECT_NAME})
 
+set_target_properties(infer2 PROPERTIES CXX_STANDARD 11)
+set_target_properties(nnef_tff_info PROPERTIES CXX_STANDARD 11)
+set_target_properties(nnef2ada PROPERTIES CXX_STANDARD 11)
+
+target_link_libraries(infer2 PRIVATE ${PROJECT_NAME})
+target_link_libraries(nnef_tff_info PRIVATE ${PROJECT_NAME})
+target_link_libraries(nnef2ada PRIVATE ${PROJECT_NAME})
+
 # install the library
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin)
+install(TARGETS infer2 EXPORT infer2
+        RUNTIME DESTINATION bin)
+install(TARGETS nnef_tff_info EXPORT nnef_tff_info
+        RUNTIME DESTINATION bin)
+install(TARGETS nnef2ada EXPORT nnef2ada
         RUNTIME DESTINATION bin)
 
 # then the headers
